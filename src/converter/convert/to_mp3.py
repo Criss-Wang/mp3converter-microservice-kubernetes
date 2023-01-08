@@ -1,4 +1,7 @@
-import pika, json, tempfile, os
+import pika
+import json
+import tempfile
+import os
 from bson.objectid import ObjectId
 import moviepy.editor
 
@@ -24,6 +27,8 @@ def start(message, fs_videos, fs_mp3s, channel):
     f = open(tf_path, "rb")
     data = f.read()
     fid = fs_mp3s.put(data)
+
+    # remove the temp file in the temp path
     f.close()
     os.remove(tf_path)
 
@@ -40,4 +45,4 @@ def start(message, fs_videos, fs_mp3s, channel):
         )
     except Exception as err:
         fs_mp3s.delete(fid)
-        return "failed to publish message"  
+        return "failed to publish message"

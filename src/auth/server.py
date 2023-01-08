@@ -1,22 +1,20 @@
 import jwt
 import datetime
 import os
-
-import pymysql
-pymysql.install_as_MySQLdb()
 from flask import Flask, request
 from flask_mysqldb import MySQL
-
 
 server = Flask(__name__)
 mysql = MySQL(server)
 
+# print(mysql, server)
 # config
 server.config["MYSQL_HOST"] = os.environ.get("MYSQL_HOST")
 server.config["MYSQL_USER"] = os.environ.get("MYSQL_USER")
 server.config["MYSQL_PASSWORD"] = os.environ.get("MYSQL_PASSWORD")
 server.config["MYSQL_DB"] = os.environ.get("MYSQL_DB")
-server.config["MYSQL_PORT"] = os.environ.get("MYSQL_PORT")
+# print(os.environ.get("MYSQL_PORT"))
+server.config["MYSQL_PORT"] = int(os.environ.get("MYSQL_PORT"))
 
 
 @server.route("/login", methods=["POST"])
@@ -63,14 +61,14 @@ def validate():
     return decoded, 200
 
 
-def createJWT(username, secret, authz_is_admin: bool):
+def createJWT(username, secret, authz):
     return jwt.encode(
         {
             "username": username,
             "exp": datetime.datetime.now(tz=datetime.timezone.utc)
             + datetime.timedelta(days=1),
             "iat": datetime.datetime.utcnow(),
-            "admin": authz_is_admin,
+            "admin": authz,
         },
         secret,
         algorithm="HS256",
